@@ -7,8 +7,11 @@ from email.mime.text import MIMEText
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="Congrès S3C CFDT BOURGOGNE 2026", page_icon="🗳️")
 
-# Ligne à ajouter pour le logo
-st.image("LOGO CFDT SC BOURGOGNE.jpg", width=200)
+# Affichage du logo
+try:
+    st.image("LOGO CFDT SC BOURGOGNE.jpg", width=200)
+except:
+    st.info("Logo en attente de chargement sur GitHub.")
 
 st.title("🗳️ Élection du Bureau Syndical")
 st.markdown("Confirmez votre présence ou désignez un mandataire.")
@@ -67,16 +70,20 @@ if 'Nom' in df.columns:
                         
                         st.success(f"Enregistré ! {mandataire} votera pour vous.")
                         
-                        # 2. Envoi des emails
+                        # 2. Envoi du mail au délégué ABSENT (celui qui remplit le formulaire)
                         if email_user:
-                            envoyer_mail_direct(email_user, "Confirmation de Procuration", 
-                                               f"Bonjour {user},\n\nVotre absence est enregistrée. Votre voix sera portée par {mandataire}.")
+                            sujet_absent = "Confirmation de votre procuration"
+                            corps_absent = f"Bonjour {user},\n\nVotre absence au congrès est enregistrée. Votre voix sera portée par {mandataire}."
+                            envoyer_mail_direct(email_user, sujet_absent, corps_absent)
                         
-                        # Trouver l'email du mandataire
-                        email_mandataire = df[df['Nom'] == mandataire]['Email'].values[0]
-                        if pd.notna(email_mandataire):
-                            envoyer_mail_direct(email_mandataire, "Vous avez une procuration", 
-                                               f"Bonjour {mandataire},\n\n{user} vous a confié sa procuration pour le congrès de juin.")
+                        # 3. Envoi du mail au MANDATAIRE (celui qui reçoit le pouvoir)
+                        ligne_mandataire = df[df['Nom'] == mandataire]
+                        if not ligne_mandataire.empty:
+                            email_mandataire = ligne_mandataire['Email'].values[0]
+                            if pd.notna(email_mandataire) and "@" in str(email_mandataire):
+                                sujet_mandataire = "Vous avez reçu une procuration (Congrès 2026)"
+                                corps_mandataire = f"Bonjour {mandataire},\n\n{user} ne pourra pas être présent au congrès et vous a confié sa procuration.\n\nVous porterez donc sa voix en plus de la vôtre lors des votes. Merci de votre engagement."
+                                envoyer_mail_direct(email_mandataire, sujet_mandataire, corps_mandataire)
                         
                         st.balloons()
                     else:
@@ -84,9 +91,12 @@ if 'Nom' in df.columns:
             else:
                 if st.button("Valider ma présence"):
                     df.loc[ligne_index, 'Statut'] = "Présent"
+                    # On vide la mandataire au cas où il y avait un reste d'un test précédent
+                    if 'Mandataire' in df.columns:
+                        df.loc[ligne_index, 'Mandataire'] = ""
                     conn.update(data=df)
                     st.success("Présence enregistrée ! Merci.")
                     if email_user:
-                        envoyer_mail_direct(email_user, "Confirmation de présence", f"Bonjour {user}, votre présence est confirmée.")
+                        envoyer_mail_direct(email_user, "Confirmation de présence", f"Bonjour {user},\n\nVotre présence au congrès S3C CFDT BOURGOGNE 2026 est bien confirmée.")
 else:
-    st.error("Colonne 'Nom' introuvable dans le fichier.")
+    st.error("La colonne 'Nom' est introuvable. Vérifiez votre fichier Google Sheets.")
