@@ -30,7 +30,7 @@ except:
     st.info("Logo CFDT S3C Bourgogne")
 
 # --- 3. TITRE ET CONSIGNE ---
-st.title("🗳️ Congrès S3C 2026")
+st.title("🗳️ Congrès S3C Bourgone \n9 juin 2026")
 st.markdown("### **Élection du Bureau Syndical**")
 st.info("💡 *Confirmez votre présence ou transmettez votre mandat pour ce vote.*")
 st.divider()
