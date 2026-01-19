@@ -15,7 +15,7 @@ except:
 
 st.title("🗳️ Congrès S3C Bourgogne 2026")
 st.markdown("### **Élection du Bureau Syndical**")
-st.markdown("Confirmez votre présence ou désignez un mandataire.")
+st.markdown("Confirmez votre participation ou transmettez votre pouvoir.")
 
 # --- FONCTION D'ENVOI DE MAIL ---
 def envoyer_mail_direct(destinataire, sujet, message):
