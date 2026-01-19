@@ -6,7 +6,7 @@ import pandas as pd
 st.set_page_config(page_title="Congrès S3C CFDT BOURGOGNE 2026", page_icon="🗳️")
 
 # Ligne à ajouter pour le logo
-st.image("logo.png", width=200)
+st.image("LOGO CFDT SC BOURGOGNE.jpg", width=200)
 
 st.title("🗳️ Élection du Bureau Syndical")
 st.markdown("Confirmez votre présence ou désignez un mandataire.")
