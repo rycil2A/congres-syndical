@@ -4,14 +4,13 @@ import pandas as pd
 import smtplib
 from email.mime.text import MIMEText
 
-# --- 1. CONFIGURATION DE LA PAGE (Optimisée Mobile) ---
+# --- 1. CONFIGURATION DE LA PAGE ---
 st.set_page_config(
     page_title="Congrès S3C Bourgogne 9 juin 2026", 
     page_icon="🗳️",
     initial_sidebar_state="collapsed"
 )
 
-# Style CSS pour les boutons larges (Spécial Smartphone)
 st.markdown("""
     <style>
     .stButton>button {
@@ -32,7 +31,7 @@ except:
 # --- 3. TITRE ET CONSIGNE ---
 st.title("🗳️ Congrès S3C Bourgogne \n9 juin 2026")
 st.markdown("### **Élection du Bureau Syndical**")
-st.info("💡 *Confirmez votre présence ou transmettez votre mandat pour ce vote.*")
+st.info("💡 *Confirmez votre présence ou désignez un remplaçant/mandataire.*")
 st.divider()
 
 # --- 4. FONCTION D'ENVOI DE MAIL ---
@@ -40,12 +39,10 @@ def envoyer_mail_direct(destinataire, sujet, message):
     try:
         gmail_user = st.secrets["emails"]["user"]
         gmail_password = st.secrets["emails"]["password"]
-
         msg = MIMEText(message)
         msg['Subject'] = sujet
         msg['From'] = f"S3C Bourgogne CFDT <{gmail_user}>"
         msg['To'] = destinataire
-
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.login(gmail_user, gmail_password)
         server.send_message(msg)
@@ -71,53 +68,71 @@ if 'Nom' in df.columns:
         if pd.notna(statut_actuel) and statut_actuel != "":
             st.warning(f"✅ Votre choix est déjà enregistré : **{statut_actuel}**")
         else:
+            # AJOUT DU 3ème CHOIX
             choix = st.radio("Serez-vous présent au congrès ?", 
-                            ["Présent", "Absent (Donner procuration)"])
+                            ["Présent", 
+                             "Absent (Donner procuration à un délégué sur liste)", 
+                             "Absent (Me faire remplacer par un membre de section)"])
 
             st.write("") 
 
-            # --- CAS : ABSENCE / PROCURATION ---
-            if "Absent" in choix:
+            # --- CAS 1 : PROCURATION CLASSIQUE ---
+            if "procuration" in choix:
                 mandataires_pris = df['Mandataire'].dropna().unique().tolist()
                 disponibles = [n for n in noms_liste if n != user and n not in mandataires_pris]
-                
                 mandataire = st.selectbox("🤝 À qui confiez-vous votre mandat ?", [""] + disponibles)
                 
                 if st.button("🚀 VALIDER MA PROCURATION"):
                     if mandataire:
-                        df.loc[ligne_index, 'Statut'] = "Absent"
+                        df.loc[ligne_index, 'Statut'] = "Absent (Procuration)"
                         df.loc[ligne_index, 'Mandataire'] = mandataire
                         conn.update(data=df)
-                        
                         st.success(f"Enregistré ! {mandataire} votera pour vous.")
-                        st.balloons() # <--- BALLONS ICI
+                        st.balloons()
                         
                         if email_user:
-                            envoyer_mail_direct(email_user, "Confirmation de votre procuration", 
-                                f"Bonjour {user},\n\nMerci pour ton retour, ton absence au congrès du S3C Bourgogne est bien enregistrée. \nTa voix sera portée par {mandataire}. \n\nLe S3C Bourgogne te remercie")
+                            envoyer_mail_direct(email_user, "Confirmation de procuration", f"Bonjour {user},\n\nTon absence est enregistrée. Ta voix sera portée par {mandataire}.\n\nLe S3C Bourgogne te remercie.")
                         
-                        ligne_mandataire = df[df['Nom'] == mandataire]
-                        if not ligne_mandataire.empty:
-                            email_mandataire = ligne_mandataire['Email'].values[0]
-                            if pd.notna(email_mandataire):
-                                envoyer_mail_direct(email_mandataire, "Vous avez reçu un mandat", 
-                                    f"Bonjour {mandataire},\n\n{user} ne pourra pas être présent au congrés du S3C Bourgogne et te donne procuration.\n\nTu portera sa voix en plus de la tienne lors des votes pour l'élection du Bureau du S3C Bourgogne. \n\nLe S3C Bourgogne te remercie et te donne rendea-vous le 9 juin 2026 à Dijon.")
+                        email_mandataire = df[df['Nom'] == mandataire]['Email'].values[0]
+                        if pd.notna(email_mandataire):
+                            envoyer_mail_direct(email_mandataire, "Nouveau mandat reçu", f"Bonjour {mandataire},\n\n{user} te donne procuration pour le congrès du 9 juin 2026 à Dijon.\n\nMerci de ton engagement.")
                     else:
-                        st.error("⚠️ Veuillez choisir un mandataire.")
-            
-            # --- CAS : PRÉSENCE ---
+                        st.error("⚠️ Choisissez un mandataire.")
+
+            # --- CAS 2 : REMPLACEMENT PAR UN MEMBRE EXTERNE ---
+            elif "remplacer" in choix:
+                st.write("### 📝 Coordonnées de votre remplaçant")
+                nom_remplacant = st.text_input("Nom et Prénom du remplaçant")
+                email_remplacant = st.text_input("Adresse Email du remplaçant")
+
+                if st.button("🚀 VALIDER LE REMPLACEMENT"):
+                    if nom_remplacant and email_remplacant:
+                        # Mise à jour GSheets
+                        df.loc[ligne_index, 'Statut'] = "Remplacé"
+                        df.loc[ligne_index, 'Invite_Nom'] = nom_remplacant
+                        df.loc[ligne_index, 'Invite_Email'] = email_remplacant
+                        conn.update(data=df)
+                        
+                        st.success(f"Enregistré ! {nom_remplacant} vous remplacera.")
+                        st.balloons()
+
+                        # Mail à l'utilisateur initial
+                        if email_user:
+                            envoyer_mail_direct(email_user, "Confirmation de remplacement", f"Bonjour {user},\n\nTu seras remplacé(e) par {nom_remplacant} ({email_remplacant}) au congrès du 9 juin.\n\nLe S3C Bourgogne te remercie.")
+                        
+                        # Mail au nouveau remplaçant
+                        envoyer_mail_direct(email_remplacant, "Invitation au Congrès S3C Bourgogne", f"Bonjour {nom_remplacant},\n\n{user} vous a désigné(e) pour le/la remplacer au congrès du S3C Bourgogne le 9 juin 2026 à Dijon.\n\nNous avons bien pris en compte votre participation.")
+                    else:
+                        st.error("⚠️ Veuillez remplir le nom ET l'email du remplaçant.")
+
+            # --- CAS 3 : PRÉSENCE ---
             else:
                 if st.button("✅ VALIDER MA PRÉSENCE"):
                     df.loc[ligne_index, 'Statut'] = "Présent"
-                    if 'Mandataire' in df.columns:
-                        df.loc[ligne_index, 'Mandataire'] = ""
                     conn.update(data=df)
-                    
-                    st.success("Présence enregistrée ! Merci.")
-                    st.balloons() # <--- BALLONS ICI AUSSI
-                    
+                    st.success("Présence enregistrée !")
+                    st.balloons()
                     if email_user:
-                        envoyer_mail_direct(email_user, "Confirmation de présence", 
-                            f"Bonjour {user},\n\nTa présence au congrès S3C BOURGOGNE 2026 est bien confirmée. \n\nLe S3C Bourgogne te remercie et te donne rendea-vous le 9 juin 2026 à Dijon")
+                        envoyer_mail_direct(email_user, "Confirmation de présence", f"Bonjour {user},\n\nTa présence au congrès le 9 juin 2026 à Dijon est confirmée.")
 else:
-    st.error("Impossible de charger la liste des délégués.")
+    st.error("Erreur de chargement du fichier.")
