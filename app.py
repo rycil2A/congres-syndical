@@ -6,7 +6,7 @@ from email.mime.text import MIMEText
 
 # --- 1. CONFIGURATION DE LA PAGE (Optimisée Mobile) ---
 st.set_page_config(
-    page_title="Congrès S3C Bourgogne 2026", 
+    page_title="Congrès S3C Bourgogne 9 juin 2026", 
     page_icon="🗳️",
     initial_sidebar_state="collapsed"
 )
