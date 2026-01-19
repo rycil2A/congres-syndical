@@ -24,7 +24,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 2. AFFICHAGE DU LOGO ---
-# On limite la taille pour qu'il ne prenne pas tout l'écran sur mobile
 try:
     st.image("LOGO CFDT SC BOURGOGNE.jpg", width=180)
 except:
@@ -44,7 +43,8 @@ def envoyer_mail_direct(destinataire, sujet, message):
 
         msg = MIMEText(message)
         msg['Subject'] = sujet
-        msg['From'] = gmail_user
+        # Modification ici pour afficher le nom du Syndicat comme expéditeur
+        msg['From'] = f"S3C Bourgogne CFDT <{gmail_user}>"
         msg['To'] = destinataire
 
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
@@ -95,12 +95,12 @@ if 'Nom' in df.columns:
                         
                         st.success(f"Enregistré ! {mandataire} votera pour vous.")
                         
-                        # Mail à l'Absent (Cyril)
+                        # Mail à l'Absent
                         if email_user:
                             envoyer_mail_direct(email_user, "Confirmation de votre procuration", 
                                 f"Bonjour {user},\n\nMerci pour ton retour, ton absence au congrès du S3C Bourgogne est bien enregistrée. \nTa voix sera portée par {mandataire}. \n\nLe S3C Bourgogne te remercie")
                         
-                        # Mail au Mandataire (Virginie)
+                        # Mail au Mandataire
                         ligne_mandataire = df[df['Nom'] == mandataire]
                         if not ligne_mandataire.empty:
                             email_mandataire = ligne_mandataire['Email'].values[0]
