@@ -101,7 +101,7 @@ if 'Nom' in df.columns:
                             email_mandataire = ligne_mandataire['Email'].values[0]
                             if pd.notna(email_mandataire):
                                 envoyer_mail_direct(email_mandataire, "Vous avez reçu un mandat", 
-                                    f"Bonjour {mandataire},\n\n{user} ne pourra pas être présent au congrés du S3C Bourgogne et te donne procuration.\n\nTu portera sa voix en plus de la tienne lors des votes pour l'élection du Bureau du S3C Bourgogne. \n\nLe S3C Bourgogne te remercie")
+                                    f"Bonjour {mandataire},\n\n{user} ne pourra pas être présent au congrés du S3C Bourgogne et te donne procuration.\n\nTu portera sa voix en plus de la tienne lors des votes pour l'élection du Bureau du S3C Bourgogne. \n\nLe S3C Bourgogne te remercie et te donne rendea-vous le 9 juin 2026 à Dijon.")
                     else:
                         st.error("⚠️ Veuillez choisir un mandataire.")
             
@@ -118,6 +118,6 @@ if 'Nom' in df.columns:
                     
                     if email_user:
                         envoyer_mail_direct(email_user, "Confirmation de présence", 
-                            f"Bonjour {user},\n\nTa présence au congrès S3C BOURGOGNE 2026 est bien confirmée. \n\nLe S3C Bourgogne te remercie")
+                            f"Bonjour {user},\n\nTa présence au congrès S3C BOURGOGNE 2026 est bien confirmée. \n\nLe S3C Bourgogne te remercie et te donne rendea-vous le 9 juin 2026 à Dijon")
 else:
     st.error("Impossible de charger la liste des délégués.")
