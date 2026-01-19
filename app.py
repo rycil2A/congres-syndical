@@ -13,7 +13,8 @@ try:
 except:
     st.info("Logo en attente de chargement sur GitHub.")
 
-st.title("🗳️ Élection du Bureau Syndical")
+st.title("🗳️ Congrès S3C Bourgogne 2026")
+st.markdown("### **Élection du Bureau Syndical**")
 st.markdown("Confirmez votre présence ou désignez un mandataire.")
 
 # --- FONCTION D'ENVOI DE MAIL ---
