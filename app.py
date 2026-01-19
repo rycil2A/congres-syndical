@@ -3,7 +3,10 @@ from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # --- CONFIGURATION DE LA PAGE ---
-st.set_page_config(page_title="Congrès 2026", page_icon="🗳️")
+st.set_page_config(page_title="Congrès S3C CFDT BOURGOGNE 2026", page_icon="🗳️")
+
+# Ligne à ajouter pour le logo
+st.image("logo.png", width=200)
 
 st.title("🗳️ Élection du Bureau Syndical")
 st.markdown("Confirmez votre présence ou désignez un mandataire.")
