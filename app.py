@@ -98,7 +98,7 @@ if 'Nom' in df.columns:
                         # Mail à l'Absent (Cyril)
                         if email_user:
                             envoyer_mail_direct(email_user, "Confirmation de votre procuration", 
-                                f"Bonjour {user},\n\nMerci pour ton retour, ton absence au congrès du S3C Bourgogne est bien enregistrée. Ta voix sera portée par {mandataire}. Le S3C Bourgogne te remercie")
+                                f"Bonjour {user},\n\nMerci pour ton retour, ton absence au congrès du S3C Bourgogne est bien enregistrée. \nTa voix sera portée par {mandataire}. \n\nLe S3C Bourgogne te remercie")
                         
                         # Mail au Mandataire (Virginie)
                         ligne_mandataire = df[df['Nom'] == mandataire]
@@ -106,7 +106,7 @@ if 'Nom' in df.columns:
                             email_mandataire = ligne_mandataire['Email'].values[0]
                             if pd.notna(email_mandataire):
                                 envoyer_mail_direct(email_mandataire, "Vous avez reçu un mandat", 
-                                    f"Bonjour {mandataire},\n\n{user} ne pourra pas être présent au congrés du S3C Bourgogne et te donne procuration.\n\nTu portera sa voix en plus de la tienne lors des votes pour l'élection du Bureau du S3C Bourgogne. Le S3C Bourgogne te remercie")
+                                    f"Bonjour {mandataire},\n\n{user} ne pourra pas être présent au congrés du S3C Bourgogne et te donne procuration.\n\nTu portera sa voix en plus de la tienne lors des votes pour l'élection du Bureau du S3C Bourgogne. \n\nLe S3C Bourgogne te remercie")
                         
                         st.balloons()
                     else:
@@ -123,6 +123,6 @@ if 'Nom' in df.columns:
                     
                     if email_user:
                         envoyer_mail_direct(email_user, "Confirmation de présence", 
-                            f"Bonjour {user},\n\nTa présence au congrès S3C BOURGOGNE 2026 est bien confirmée. Le S3C Bourgogne te remercie")
+                            f"Bonjour {user},\n\nTa présence au congrès S3C BOURGOGNE 2026 est bien confirmée. \n\nLe S3C Bourgogne te remercie")
 else:
     st.error("Impossible de charger la liste des délégués (Vérifiez la colonne 'Nom').")
