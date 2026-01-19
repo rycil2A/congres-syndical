@@ -121,7 +121,7 @@ if 'Nom' in df.columns:
                             envoyer_mail_direct(email_user, "Confirmation de remplacement", f"Bonjour {user},\n\nTu seras remplacé(e) par {nom_remplacant} ({email_remplacant}) au congrès du 9 juin.\n\nLe S3C Bourgogne te remercie.")
                         
                         # Mail au nouveau remplaçant
-                        envoyer_mail_direct(email_remplacant, "Invitation au Congrès S3C Bourgogne", f"Bonjour {nom_remplacant},\n\n{user} vous a désigné(e) pour le/la remplacer au congrès du S3C Bourgogne le 9 juin 2026 à Dijon.\n\nNous avons bien pris en compte votre participation.")
+                        envoyer_mail_direct(email_remplacant, "Invitation au Congrès S3C Bourgogne", f"Bonjour {nom_remplacant},\n\n{user} t'as désigné(e) pour que tu le remplaces au congrès du S3C Bourgogne le 9 juin 2026 à Dijon.\n\nNous avons bien pris en compte votre participation.")
                     else:
                         st.error("⚠️ Veuillez remplir le nom ET l'email du remplaçant.")
 
