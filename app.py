@@ -21,7 +21,7 @@ st.markdown("""
         font-weight: bold;
     }
     </style>
-    """, unsafe_allow_index=True)
+    """, unsafe_allow_html=True)
 
 # --- 2. AFFICHAGE DU LOGO ---
 # On limite la taille pour qu'il ne prenne pas tout l'écran sur mobile
