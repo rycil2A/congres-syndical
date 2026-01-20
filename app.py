@@ -75,18 +75,22 @@ if 'Nom' in df.columns:
 
             st.write("") 
 
-            # --- CAS 1 : PROCURATION CLASSIQUE (AVEC FILTRES STRICTS) ---
+           # --- CAS 1 : PROCURATION CLASSIQUE (AVEC FILTRES STRICTS) ---
             if "procuration" in choix:
-                # FILTRE 1 : Personnes ayant déjà donné procuration ou étant remplacées (Les absents)
-                absents = df[df['Statut'].str.contains("Absent|Remplacé", na=False, case=False)]['Nom'].tolist()
+                # On s'assure que la colonne Statut est traitée comme du texte pour éviter l'erreur
+                df['Statut'] = df['Statut'].fillna('').astype(str)
+                
+                # FILTRE 1 : Les absents (ceux qui ont "Absent" ou "Remplacé" dans leur statut)
+                mask_absents = df['Statut'].str.contains("Absent|Remplacé", na=False, case=False)
+                absents = df[mask_absents]['Nom'].tolist()
                 
                 # FILTRE 2 : Personnes ayant déjà reçu une procuration (Limite de 1 mandat)
                 deja_mandataires = df['Mandataire'].dropna().unique().tolist()
                 
-                # FILTRE 3 : Réciprocité (Qui m'a déjà donné son mandat ? Je ne peux pas lui redonner)
+                # FILTRE 3 : Réciprocité (Qui m'a déjà donné son mandat ?)
                 ceux_qui_m_ont_choisi = df[df['Mandataire'] == user]['Nom'].tolist()
 
-                # CONSTRUCTION DE LA LISTE FINALE DES DISPONIBLES
+                # CONSTRUCTION DE LA LISTE FINALE
                 disponibles = [
                     n for n in noms_liste 
                     if n != user                      # Pas soi-même
