@@ -11,22 +11,36 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Style CSS : Couleur orange pour la barre de progression et boutons larges
+# Style CSS : Ajustements de l'espacement haut, couleurs et boutons
 st.markdown("""
     <style>
+    /* RÉDUIRE L'ÉCART EN HAUT DE PAGE */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem;
+    }
+    
+    /* REMONTER LE LOGO */
+    [data-testid="stImage"] {
+        margin-top: -25px;
+        margin-bottom: -10px;
+    }
+
     /* Barre de progression en orange CFDT */
     .stProgress > div > div > div > div {
         background-color: #EF8F04;
     }
+    
     /* Boutons larges et gras */
     .stButton>button {
         width: 100%;
-        border-radius: 5px;
+        border-radius: 6px;
         height: 3.5em;
         font-weight: bold;
         background-color: #ff4b4b;
         color: white;
     }
+    
     /* Style des textes informatifs */
     .stAlert {
         border-radius: 10px;
@@ -100,7 +114,7 @@ if 'Nom' in df.columns:
             choix = st.radio("Serez-vous présent au congrès ?", 
                             ["Présent", 
                              "Absent (Donner ma procuration à un autre responsable de section)", 
-                             "Absent (Me faire remplacer par un autre membre de ma section)"])
+                             "Absent (Me faire remplacer par un membre de ma section)"])
 
             st.write("") 
 
