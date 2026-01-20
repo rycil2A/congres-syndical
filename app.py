@@ -114,7 +114,7 @@ if 'Nom' in df.columns:
                         st.success(f"Enregistré ! {mandataire} votera pour vous.")
                         st.balloons()
                         if email_user:
-                            envoyer_mail_direct(email_user, "Confirmation de procuration", f"Bonjour {user},\n\nTon absence est bien enregistrée. Ta voix sera portée par {mandataire}. n\Nous te remercions. \n\n\nLe S3C Bourgogne")
+                            envoyer_mail_direct(email_user, "Confirmation de procuration", f"Bonjour {user},\n\nTon absence est bien enregistrée. Ta voix sera portée par {mandataire}. \nNous te remercions. \n\n\nLe S3C Bourgogne")
                         
                         email_mandataire = df[df['Nom'] == mandataire]['Email'].values[0]
                         if pd.notna(email_mandataire):
