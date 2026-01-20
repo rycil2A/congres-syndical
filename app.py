@@ -16,7 +16,7 @@ st.markdown("""
     <style>
     /* Barre de progression en orange CFDT */
     .stProgress > div > div > div > div {
-        background-color: #ff4b4b;
+        background-color: #EF8F04;
     }
     /* Boutons larges et gras */
     .stButton>button {
