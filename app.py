@@ -95,7 +95,7 @@ if 'Nom' in df.columns:
             elif "Remplacé" in statut_actuel:
                 st.info(f"Remplaçant : **{df.loc[ligne_index, 'Invite_Nom']}**")
             st.write("---")
-            st.write("🙏 *Merci de ton implication. Si tu as besoin de modifier cette information, contacte ton délégué de section.*")
+            st.write("🙏 *Merci de ton implication. Si tu as besoin de modifier cette information, contacte le Gestionnaire de l'application, Cyril ANTOLINI.*")
         else:
             choix = st.radio("Serez-vous présent au congrès ?", 
                             ["Présent", 
