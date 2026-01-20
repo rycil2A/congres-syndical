@@ -68,7 +68,6 @@ if 'Nom' in df.columns:
         if pd.notna(statut_actuel) and statut_actuel != "":
             st.warning(f"✅ Votre choix est déjà enregistré : **{statut_actuel}**")
         else:
-            # AJOUT DU 3ème CHOIX
             choix = st.radio("Serez-vous présent au congrès ?", 
                             ["Présent", 
                              "Absent (Donner procuration à un délégué sur liste)", 
@@ -76,12 +75,31 @@ if 'Nom' in df.columns:
 
             st.write("") 
 
-            # --- CAS 1 : PROCURATION CLASSIQUE ---
+            # --- CAS 1 : PROCURATION CLASSIQUE (AVEC FILTRES STRICTS) ---
             if "procuration" in choix:
-                mandataires_pris = df['Mandataire'].dropna().unique().tolist()
-                disponibles = [n for n in noms_liste if n != user and n not in mandataires_pris]
+                # FILTRE 1 : Personnes ayant déjà donné procuration ou étant remplacées (Les absents)
+                absents = df[df['Statut'].str.contains("Absent|Remplacé", na=False, case=False)]['Nom'].tolist()
+                
+                # FILTRE 2 : Personnes ayant déjà reçu une procuration (Limite de 1 mandat)
+                deja_mandataires = df['Mandataire'].dropna().unique().tolist()
+                
+                # FILTRE 3 : Réciprocité (Qui m'a déjà donné son mandat ? Je ne peux pas lui redonner)
+                ceux_qui_m_ont_choisi = df[df['Mandataire'] == user]['Nom'].tolist()
+
+                # CONSTRUCTION DE LA LISTE FINALE DES DISPONIBLES
+                disponibles = [
+                    n for n in noms_liste 
+                    if n != user                      # Pas soi-même
+                    and n not in absents              # Pas un absent déclaré
+                    and n not in deja_mandataires      # Pas quelqu'un qui a déjà un mandat
+                    and n not in ceux_qui_m_ont_choisi # Pas mon propre "donneur"
+                ]
+                
                 mandataire = st.selectbox("🤝 À qui confiez-vous votre mandat ?", [""] + disponibles)
                 
+                if not disponibles:
+                    st.error("⚠️ Aucun mandataire disponible pour le moment (tous les délégués présents ont déjà reçu un mandat ou sont absents).")
+
                 if st.button("🚀 VALIDER MA PROCURATION"):
                     if mandataire:
                         df.loc[ligne_index, 'Statut'] = "Absent (Procuration)"
@@ -107,20 +125,18 @@ if 'Nom' in df.columns:
 
                 if st.button("🚀 VALIDER LE REMPLACEMENT"):
                     if nom_remplacant and email_remplacant:
-                        # Mise à jour GSheets
                         df.loc[ligne_index, 'Statut'] = "Remplacé"
                         df.loc[ligne_index, 'Invite_Nom'] = nom_remplacant
                         df.loc[ligne_index, 'Invite_Email'] = email_remplacant
+                        # Sécurité : si la personne était mandataire pour quelqu'un d'autre, elle doit être retirée (optionnel selon vos règles)
                         conn.update(data=df)
                         
                         st.success(f"Enregistré ! {nom_remplacant} vous remplacera.")
                         st.balloons()
 
-                        # Mail à l'utilisateur initial
                         if email_user:
                             envoyer_mail_direct(email_user, "Confirmation de remplacement", f"Bonjour {user},\n\nTu seras remplacé(e) par {nom_remplacant} ({email_remplacant}) au congrès du 9 juin.\n\nLe S3C Bourgogne te remercie.")
                         
-                        # Mail au nouveau remplaçant
                         envoyer_mail_direct(email_remplacant, "Invitation au Congrès S3C Bourgogne", f"Bonjour {nom_remplacant},\n\n{user} t'as désigné(e) pour que tu le remplaces au congrès du S3C Bourgogne le 9 juin 2026 à Dijon.\n\nNous avons bien pris en compte votre participation.")
                     else:
                         st.error("⚠️ Veuillez remplir le nom ET l'email du remplaçant.")
