@@ -11,18 +11,18 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Style CSS : Ajustements de l'espacement haut, couleurs et boutons
+# Style CSS : Ajustement pour un logo entier et bien placé
 st.markdown("""
     <style>
-    /* RÉDUIRE L'ÉCART EN HAUT DE PAGE */
+    /* JUSTE MILIEU POUR L'ÉCART EN HAUT */
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 2rem !important; /* On redescend un peu le bloc principal */
         padding-bottom: 1rem;
     }
     
-    /* REMONTER LE LOGO */
+    /* ON DESCEND LE LOGO POUR QU'IL SOIT ENTIER */
     [data-testid="stImage"] {
-        margin-top: -25px;
+        margin-top: -5px; /* Marge négative très légère pour éviter de couper l'image */
         margin-bottom: -10px;
     }
 
@@ -52,6 +52,7 @@ st.markdown("""
 col_l, col_c, col_r = st.columns([1, 2, 1])
 with col_c:
     try:
+        # L'option use_container_width assure que l'image s'adapte sans déborder
         st.image("LOGO CFDT SC BOURGOGNE.jpg", use_container_width=True)
     except:
         st.info("Logo CFDT S3C Bourgogne")
