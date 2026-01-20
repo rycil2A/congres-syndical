@@ -138,7 +138,7 @@ if 'Nom' in df.columns:
                         st.balloons()
                         if email_user:
                             envoyer_mail_direct(email_user, "Confirmation de remplacement", f"Bonjour {user},\n\nTu seras remplacé(e) par {nom_remplacant} pour te représenter au Congrés du Syndicat. \nNous te remercions. A bientot \n\n\nLe S3C Bourgogne.")
-                        envoyer_mail_direct(email_remplacant, "Invitation au Congrès", f"Bonjour {nom_remplacant},\n\n{user} t'a désigné pour le remplacer, nous te remercions. \nA bientôt. \n\n\nLe S3C Bourgogne")
+                        envoyer_mail_direct(email_remplacant, "Invitation au Congrès", f"Bonjour {nom_remplacant},\n\n{user} t'a désigné pour le remplacer au Congrés du S3C CFDT Bourgogne, nous te remercions. \nA bientôt. \n\n\nLe S3C Bourgogne")
                     else:
                         st.error("⚠️ Veuillez remplir le nom ET l'email du remplaçant.")
 else:
