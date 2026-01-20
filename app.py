@@ -11,13 +11,29 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Style CSS pour la couleur de fond, les boutons et la lisibilité
 st.markdown("""
     <style>
+    /* Couleur de fond de l'application */
+    .stApp {
+        background-color: #FFDABD;
+    }
+
+    /* Style des boutons larges pour mobile */
     .stButton>button {
         width: 100%;
         border-radius: 5px;
         height: 3.5em;
         font-weight: bold;
+        background-color: #ff4b4b;
+        color: white;
+    }
+
+    /* Fond semi-transparent pour les formulaires pour mieux lire sur le beige */
+    .stSelectbox, .stRadio, .stTextInput {
+        background-color: rgba(255, 255, 255, 0.4);
+        padding: 10px;
+        border-radius: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -63,7 +79,10 @@ if 'Nom' in df.columns:
     if user:
         ligne_index = df[df['Nom'] == user].index[0]
         email_user = df.loc[ligne_index, 'Email'] if 'Email' in df.columns else None
-        statut_actuel = df.loc[ligne_index, 'Statut'] if 'Statut' in df.columns else None
+        
+        # Sécurisation de la colonne Statut pour éviter les erreurs d'analyse de texte
+        df['Statut'] = df['Statut'].fillna('').astype(str)
+        statut_actuel = df.loc[ligne_index, 'Statut']
 
         if pd.notna(statut_actuel) and statut_actuel != "":
             st.warning(f"✅ Votre choix est déjà enregistré : **{statut_actuel}**")
@@ -75,26 +94,23 @@ if 'Nom' in df.columns:
 
             st.write("") 
 
-           # --- CAS 1 : PROCURATION CLASSIQUE (AVEC FILTRES STRICTS) ---
+            # --- CAS 1 : PROCURATION CLASSIQUE (AVEC FILTRES DE RÈGLES STRICTES) ---
             if "procuration" in choix:
-                # On s'assure que la colonne Statut est traitée comme du texte pour éviter l'erreur
-                df['Statut'] = df['Statut'].fillna('').astype(str)
-                
-                # FILTRE 1 : Les absents (ceux qui ont "Absent" ou "Remplacé" dans leur statut)
+                # FILTRE 1 : Exclure les absents déclarés (Statut contenant Absent ou Remplacé)
                 mask_absents = df['Statut'].str.contains("Absent|Remplacé", na=False, case=False)
                 absents = df[mask_absents]['Nom'].tolist()
                 
-                # FILTRE 2 : Personnes ayant déjà reçu une procuration (Limite de 1 mandat)
+                # FILTRE 2 : Limite de 1 mandat (Personnes déjà choisies comme mandataires)
                 deja_mandataires = df['Mandataire'].dropna().unique().tolist()
                 
-                # FILTRE 3 : Réciprocité (Qui m'a déjà donné son mandat ?)
+                # FILTRE 3 : Réciprocité (Si X m'a donné son mandat, je ne peux pas lui redonner le mien)
                 ceux_qui_m_ont_choisi = df[df['Mandataire'] == user]['Nom'].tolist()
 
-                # CONSTRUCTION DE LA LISTE FINALE
+                # CONSTRUCTION DE LA LISTE DES DISPONIBLES
                 disponibles = [
                     n for n in noms_liste 
                     if n != user                      # Pas soi-même
-                    and n not in absents              # Pas un absent déclaré
+                    and n not in absents              # Pas un absent
                     and n not in deja_mandataires      # Pas quelqu'un qui a déjà un mandat
                     and n not in ceux_qui_m_ont_choisi # Pas mon propre "donneur"
                 ]
@@ -102,7 +118,7 @@ if 'Nom' in df.columns:
                 mandataire = st.selectbox("🤝 À qui confiez-vous votre mandat ?", [""] + disponibles)
                 
                 if not disponibles:
-                    st.error("⚠️ Aucun mandataire disponible pour le moment (tous les délégués présents ont déjà reçu un mandat ou sont absents).")
+                    st.error("⚠️ Aucun mandataire disponible (tous sont soit absents, soit déjà porteurs d'un mandat).")
 
                 if st.button("🚀 VALIDER MA PROCURATION"):
                     if mandataire:
@@ -119,7 +135,7 @@ if 'Nom' in df.columns:
                         if pd.notna(email_mandataire):
                             envoyer_mail_direct(email_mandataire, "Nouveau mandat reçu", f"Bonjour {mandataire},\n\n{user} te donne procuration pour le congrès du 9 juin 2026 à Dijon.\n\nMerci de ton engagement.")
                     else:
-                        st.error("⚠️ Choisissez un mandataire.")
+                        st.error("⚠️ Veuillez choisir un mandataire.")
 
             # --- CAS 2 : REMPLACEMENT PAR UN MEMBRE EXTERNE ---
             elif "remplacer" in choix:
@@ -132,7 +148,6 @@ if 'Nom' in df.columns:
                         df.loc[ligne_index, 'Statut'] = "Remplacé"
                         df.loc[ligne_index, 'Invite_Nom'] = nom_remplacant
                         df.loc[ligne_index, 'Invite_Email'] = email_remplacant
-                        # Sécurité : si la personne était mandataire pour quelqu'un d'autre, elle doit être retirée (optionnel selon vos règles)
                         conn.update(data=df)
                         
                         st.success(f"Enregistré ! {nom_remplacant} vous remplacera.")
@@ -155,4 +170,4 @@ if 'Nom' in df.columns:
                     if email_user:
                         envoyer_mail_direct(email_user, "Confirmation de présence", f"Bonjour {user},\n\nTa présence au congrès le 9 juin 2026 à Dijon est confirmée.")
 else:
-    st.error("Erreur de chargement du fichier.")
+    st.error("Erreur de chargement du fichier (Vérifiez la colonne 'Nom').")
