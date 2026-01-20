@@ -86,7 +86,7 @@ if 'Nom' in df.columns:
                     st.success("Présence enregistrée ! Merci.")
                     st.balloons()
                     if email_user:
-                        envoyer_mail_direct(email_user, "Confirmation de présence", f"Bonjour {user},\n\nTa présence au congrès du S3C Bourgogne du 9 juin 2026 à Dijon est confirmée. \n\n\nLe S3C Bourgogne")
+                        envoyer_mail_direct(email_user, "Confirmation de présence", f"Bonjour {user},\n\nTa présence, au congrès du S3C Bourgogne, le 9 juin 2026 à Dijon est confirmée. \nNous sommes ravis de te compter parmi nous. \n\n\nLe S3C Bourgogne")
 
             # --- CAS 2 : PROCURATION CLASSIQUE (FILTRES STRICTS) ---
             elif "procuration" in choix:
@@ -114,11 +114,11 @@ if 'Nom' in df.columns:
                         st.success(f"Enregistré ! {mandataire} votera pour vous.")
                         st.balloons()
                         if email_user:
-                            envoyer_mail_direct(email_user, "Confirmation de procuration", f"Bonjour {user},\n\nTon absence est bien enregistrée. Ta voix sera portée par {mandataire}. \nNous te remercions. \n\n\nLe S3C Bourgogne")
+                            envoyer_mail_direct(email_user, "Confirmation de procuration", f"Bonjour {user},\n\nTon absence est bien enregistrée. Ta voix sera portée par {mandataire}. \nNous te remercions et te souhaitons une agréable journée. \n\n\nLe S3C Bourgogne")
                         
                         email_mandataire = df[df['Nom'] == mandataire]['Email'].values[0]
                         if pd.notna(email_mandataire):
-                            envoyer_mail_direct(email_mandataire, "Nouveau mandat reçu", f"Bonjour {mandataire},\n\n{user} te donne procuration. Nous te donnons rendez-vous le 9 juin 2026 à Dijon pour le Congrés du Syndicat \n\n\nLe S3C Bourgogne")
+                            envoyer_mail_direct(email_mandataire, "Nouveau mandat reçu", f"Bonjour {mandataire},\n\n{user} te donne procuration. Nous te donnons rendez-vous le 9 juin 2026 à Dijon pour le Congrés du Syndicat. \nous serions ravis de te compter parmi nous. \n\n\nLe S3C Bourgogne")
                     else:
                         st.error("⚠️ Choisissez un mandataire.")
 
@@ -137,7 +137,7 @@ if 'Nom' in df.columns:
                         st.success(f"Enregistré ! {nom_remplacant} vous remplacera.")
                         st.balloons()
                         if email_user:
-                            envoyer_mail_direct(email_user, "Confirmation de remplacement", f"Bonjour {user},\n\nTu seras remplacé(e) par {nom_remplacant} pour te représenter au Congrés du Syndicat. \nNous te remercions. \n\n\nLe S3C Bourgogne.")
+                            envoyer_mail_direct(email_user, "Confirmation de remplacement", f"Bonjour {user},\n\nTu seras remplacé(e) par {nom_remplacant} pour te représenter au Congrés du Syndicat. \nNous te remercions. A bientot \n\n\nLe S3C Bourgogne.")
                         envoyer_mail_direct(email_remplacant, "Invitation au Congrès", f"Bonjour {nom_remplacant},\n\n{user} t'a désigné pour le remplacer.")
                     else:
                         st.error("⚠️ Veuillez remplir le nom ET l'email du remplaçant.")
