@@ -59,7 +59,7 @@ with col_c:
 # --- 3. TITRE ET CONSIGNE ---
 st.title("🗳️ Congrès S3C Bourgogne \n9 juin 2026")
 st.markdown("### **Élection du Bureau Syndical**")
-st.info("💡 *Confirmez votre présence ou désignez un remplaçant/mandataire.*")
+st.info("💡 *Confirmez votre présence ou désignez un remplaçant qui portera vos voix.*")
 
 # --- 4. FONCTION D'ENVOI DE MAIL ---
 def envoyer_mail_direct(destinataire, sujet, message):
